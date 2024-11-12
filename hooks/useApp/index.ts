@@ -24,7 +24,7 @@ export type AppContextProps = {
 
 const useApp = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [showEdges, setShowEdges] = React.useState<boolean>(false);
+  const [showEdges, setShowEdges] = React.useState<boolean>(true);
   const [appTheme, setAppTheme] = React.useState<"dark" | "light">("dark");
   const [data, setData] = React.useState<GraphDataType | undefined>();
   const [dataGroups, setDataGroups] = React.useState<Record<string, any>>({});

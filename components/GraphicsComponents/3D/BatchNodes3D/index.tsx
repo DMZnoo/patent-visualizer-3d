@@ -10,12 +10,12 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { GraphLink, LinkType, Node } from "global.d.types";
 import { InfoBox } from "./styles";
+import useApp, { AppContext, AppContextProps } from "hooks/useApp";
 
 const BatchNodes3D = () => {
   const [edges, setEdges] = React.useState<any>();
   const [selectedNodeId, setSelectedNodeId] = React.useState<number>(-1);
   const mouse = new THREE.Vector2(1, 1);
-  const [showEdges, setShowEdges] = React.useState<boolean>(true);
   const [showGroupInfo, setShowGroupInfo] = React.useState<string>();
   const [moving, setMoving] = React.useState<boolean>(false);
 
@@ -26,11 +26,14 @@ const BatchNodes3D = () => {
     layer,
     selectedGroupId,
     setSelectedGroupId,
-    enableScroll,
+    setShowEdges,
+    showEdges,
     canvasTheme,
     groups,
     setGroups,
   } = React.useContext<CanvasContextProps>(CanvasContext);
+  const appContext = React.useContext<AppContextProps>(AppContext)
+  const { enableScroll, selectedGroupId: groupId, setSelectedGroupId: setGroupId } = appContext;
   const [drawSize, setDrawSize] = React.useState<number>(10000);
 
   const {
@@ -38,6 +41,7 @@ const BatchNodes3D = () => {
     scene,
     gl: { domElement },
   } = useThree();
+
   React.useEffect(() => {
     if (canvasTheme === "dark") {
       scene.background = new THREE.Color(0x000000);
@@ -45,6 +49,12 @@ const BatchNodes3D = () => {
       scene.background = new THREE.Color(0xffffff);
     }
   }, [canvasTheme]);
+
+  React.useEffect(() => {
+    console.log("groupId: ", groupId)
+    setSelectedGroupId(groupId)
+  }, [groupId])
+
   const setGroupPostion = React.useCallback(() => {
     setLoading(true);
     let tempGroups: any = {};
@@ -117,7 +127,7 @@ const BatchNodes3D = () => {
         setGroupPostion();
         setNodePositionAndEdges();
         console.log("graphData: ", graphData);
-        setShowEdges(true);
+        // setShowEdges(true);
       }
     }
   }, [graphData]);
@@ -188,6 +198,10 @@ const BatchNodes3D = () => {
                   position={new Vector3().fromArray(node.position)}
                   scale={2}
                   onClick={(e: ThreeEvent<MouseEvent>) => {
+                    console.log('e: ', ed)
+                    e.instanceId && setSelectedNodeId(e.instanceId);
+                  }}
+                  onPointerEnter={(e) => {
                     e.instanceId && setSelectedNodeId(e.instanceId);
                   }}
                 >
@@ -230,7 +244,7 @@ const BatchNodes3D = () => {
           .filter((edge: GraphLink) =>
             selectedGroupId
               ? edge.source.group.id === selectedGroupId ||
-                edge.target.group.id === selectedGroupId
+              edge.target.group.id === selectedGroupId
               : edge
           )
           .map((edge: GraphLink, i: number) => {
@@ -239,7 +253,7 @@ const BatchNodes3D = () => {
                 key={"edge-" + i}
                 coords={edge.source.position}
                 nextCoords={edge.target.position}
-                visibility={true}
+                visibility={showEdges}
               />
             );
           })}

@@ -6,12 +6,11 @@ import Dropzone from "react-dropzone";
 
 interface IDropZone {
   setGraphData: (val: any) => void;
-  setDim: (val: 3 | 2) => void;
 }
 interface Event<T = EventTarget> {
   target: T;
 }
-const DropZone: React.FC<IDropZone> = ({ setGraphData, setDim }) => {
+const DropZone: React.FC<IDropZone> = ({ setGraphData }) => {
   const {
     setLoading,
     appTheme,
@@ -54,11 +53,6 @@ const DropZone: React.FC<IDropZone> = ({ setGraphData, setDim }) => {
               }
               setCurrentFileName(theFile.name);
 
-              if (theFile.name.includes("2d")) {
-                setDim(2);
-              } else {
-                setDim(3);
-              }
               setCachedData({ [theFile.name]: JSON.stringify(json) });
               setData(json);
               setGraphData(json);

@@ -14,8 +14,6 @@ export type CanvasContextProps = {
   setGraphData: (val: any) => void;
   loading: boolean;
   setLoading: (val: boolean) => void;
-  dim: 3 | 2;
-  setDim: (val: 3 | 2) => void;
   selectedGroupId: string | undefined;
   setSelectedGroupId: (val: string | undefined) => void;
   canvasTheme: "dark" | "light";
@@ -27,7 +25,7 @@ export type CanvasContextProps = {
 };
 
 const useCanvas = (): CanvasContextProps => {
-  const [showEdges, setShowEdges] = React.useState<boolean>(false);
+  const [showEdges, setShowEdges] = React.useState<boolean>(true);
   const [nodeCount, setNodeCount] = React.useState<number>(0);
   const [layer, setLayer] = React.useState<number>(0);
   const [showLabel, toggleLabel] = React.useState<boolean>(true);
@@ -36,7 +34,6 @@ const useCanvas = (): CanvasContextProps => {
   );
   const [graphData, setGraphData] = React.useState<GraphDataType>();
   const [loading, setLoading] = React.useState<boolean>(true);
-  const [dim, setDim] = React.useState<3 | 2>(3);
   const [selectedGroupId, setSelectedGroupId] = React.useState<string>();
   const [groups, setGroups] = React.useState<Record<string, any>>({});
   const [enableScroll, setEnableScroll] = React.useState<boolean>(true);
@@ -54,8 +51,6 @@ const useCanvas = (): CanvasContextProps => {
     setGraphData,
     loading,
     setLoading,
-    dim,
-    setDim,
     selectedGroupId,
     setSelectedGroupId,
     canvasTheme,

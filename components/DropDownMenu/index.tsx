@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Listbox, Switch, Transition } from "@headlessui/react";
 import { AppContextProps, AppContext } from "hooks/useApp";
-import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+import { CheckIcon, SelectorIcon, XIcon } from "@heroicons/react/solid";
+import useCanvas, { CanvasContext, CanvasContextProps } from "hooks/useCanvas";
 
 interface IDropDownMenu {
   data: Record<string, any> | string[];
@@ -14,8 +15,7 @@ const DropDownMenu: React.FC<IDropDownMenu> = ({
   selected,
   setSelected,
 }) => {
-  const { setEnableScroll, enableScroll } =
-    React.useContext<AppContextProps>(AppContext);
+  const { setEnableScroll, enableScroll } = React.useContext<AppContextProps>(AppContext)
   const isDataArray = Array.isArray(data);
   const graphData = isDataArray ? data : Object.entries(data);
   return (
@@ -28,7 +28,14 @@ const DropDownMenu: React.FC<IDropDownMenu> = ({
         //@ts-ignore
         onClick={(e) => setEnableScroll(!enableScroll)}
       >
-        <div className="relative mt-1">
+        <div className="relative mt-1" onMouseEnter={() => {
+          console.log("setEnableScroll: ", enableScroll)
+          setEnableScroll(false);
+        }}
+          onMouseLeave={() => {
+            setEnableScroll(true)
+          }}
+        >
           <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
             <span className="block truncate">{selected}</span>
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -57,17 +64,15 @@ const DropDownMenu: React.FC<IDropDownMenu> = ({
                   {({ selected, active }) => (
                     <>
                       <span
-                        className={`${
-                          selected ? "font-medium" : "font-normal"
-                        } block truncate`}
+                        className={`${selected ? "font-medium" : "font-normal"
+                          } block truncate`}
                       >
                         {isDataArray ? group : group[0]}
                       </span>
                       {selected ? (
                         <span
-                          className={`${
-                            active ? "text-amber-600" : "text-amber-600"
-                          }
+                          className={`${active ? "text-amber-600" : "text-amber-600"
+                            }
                         absolute inset-y-0 left-0 flex items-center pl-3`}
                         >
                           <CheckIcon className="w-5 h-5" aria-hidden="true" />
@@ -81,6 +86,7 @@ const DropDownMenu: React.FC<IDropDownMenu> = ({
           </Transition>
         </div>
       </Listbox>
+
     </div>
   );
 };

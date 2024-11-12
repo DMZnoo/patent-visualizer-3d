@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Canvas } from "@react-three/fiber";
 import type { NextPage } from "next";
-import BatchNodes2D from "components/GraphicsComponents/2D/BatchNodes2D";
 import CameraControls from "components/utils/CameraControls";
 import StatsComponent from "components/utils/StatsComponent";
 import Widget from "components/Widget";
@@ -11,6 +10,7 @@ import { AppContext, AppContextProps } from "hooks/useApp";
 import Loading from "components/Loading";
 import BatchNodes3D from "components/GraphicsComponents/3D/BatchNodes3D";
 import app from "next/app";
+import Data from 'public/merged-data.json';
 
 const Home: NextPage = () => {
   const context = useCanvas();
@@ -31,18 +31,28 @@ const Home: NextPage = () => {
     setShowEdges,
   } = context;
   const appContext = React.useContext<AppContextProps>(AppContext);
+  const {
+    setCurrentFileName,
+    setFileNames,
+    setData,
+  } = appContext;
 
   React.useEffect(() => {
+    setLoading(true);
+    setCurrentFileName("test-data");
+    setFileNames(['test-data'])
+    setData(Data);
+    setGraphData(Data);
     setLoading(false);
   }, []);
 
-  if (appContext.loading) {
-    return <Loading />;
-  }
+  // if (appContext.loading) {
+  //   return <Loading />;
+  // }
 
   return (
     <div className="h-screen w-screen">
-      {loading ? (
+      {appContext.loading || loading ? (
         <Loading />
       ) : (
         <div className="absolute w-screen h-screen">
@@ -53,32 +63,22 @@ const Home: NextPage = () => {
               setGraphData(value.data);
               setEnableScroll(value.enableScroll);
               setShowEdges(value.showEdges);
-              if (value.selectedGroupId) {
-                setSelectedGroupId(value.selectedGroupId);
-              }
+              setSelectedGroupId(value.selectedGroupId);
               return (
-                <Canvas>
+                <Canvas camera={{ position: [100, 0, 0] }}>
                   <CanvasContext.Provider value={context}>
                     <ambientLight />
                     <pointLight position={[0, 0, 0]} />
                     <axesHelper />
                     <perspectiveCamera
                       aspect={window.innerWidth / window.innerHeight}
-                      fov={30}
-                      position={[0, 0, 2]}
-                      near={0.5}
-                      far={10000000}
+                      fov={75}
+                      position={[100, 0, 0]}
+                      // position={[10000000, 10000000, 2]}
+                      near={0.1}
+                      far={1000}
                     />
-                    {dim === 3 && (
-                      <>
-                        <BatchNodes3D />
-                      </>
-                    )}
-                    {dim === 2 && (
-                      <>
-                        <BatchNodes2D />
-                      </>
-                    )}
+                    <BatchNodes3D />
                     <CameraControls dim={dim} />
                     <StatsComponent />
                   </CanvasContext.Provider>
@@ -86,12 +86,12 @@ const Home: NextPage = () => {
               );
             }}
           </AppContext.Consumer>
+          <Widget setLayer={setLayer} layer={layer} setDim={setDim} dim={dim} />
         </div>
       )}
-      <Widget setLayer={setLayer} layer={layer} setDim={setDim} dim={dim} />
-      <div className="absolute mt-20 w-60">
+      {/* <div className="absolute mt-20 w-60">
         <DropZone setGraphData={setGraphData} setDim={setDim} />
-      </div>
+      </div> */}
     </div>
   );
 };
